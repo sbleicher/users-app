@@ -1,0 +1,67 @@
+<div class="page-header">
+    @if (mode === 'create') {
+        <h1>Create User</h1>
+    }
+    @if (mode === 'edit' && user_id !== undefined) {
+        <h1>Edit User > {{user?.user_id}}</h1>
+    }
+    <button mat-flat-button (click)="navigateToListPage()">Back</button>
+</div>
+
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <mat-grid-list cols="3" rowHeight="100px">
+        <mat-grid-tile>
+            <mat-form-field >
+                <mat-label>Username</mat-label>
+                <input matInput type="text" maxlength="50" formControlName="user_name" />
+                @if (form.get('user_name')?.hasError('required')) {
+                    <mat-error>Username is <strong>required</strong></mat-error>
+                }
+            </mat-form-field>
+        </mat-grid-tile>
+        <mat-grid-tile>
+            <mat-form-field >
+                <mat-label>First Name</mat-label>
+                <input matInput type="text" maxlength="255" formControlName="first_name" />
+                @if (form.get('first_name')?.hasError('required')) {
+                    <mat-error>First Name is <strong>required</strong></mat-error>
+                }
+            </mat-form-field>
+        </mat-grid-tile>
+        <mat-grid-tile>
+            <mat-form-field >
+                <mat-label>Last Name</mat-label>
+                <input matInput type="text" maxlength="255" formControlName="last_name" />
+                @if (form.get('last_name')?.hasError('required')) {
+                    <mat-error>Last Name is <strong>required</strong></mat-error>
+                }
+            </mat-form-field>
+        </mat-grid-tile>
+        <mat-grid-tile>
+            <mat-form-field>
+                <mat-label>Email</mat-label>
+                <input type="email" matInput formControlName="email"/>
+                @if (form.get('email')?.hasError('email') && !form.get('email')?.hasError('required')) {<mat-error>Please enter a valid email address</mat-error>}
+                @if (form.get('email')?.hasError('required')) {<mat-error>Email is <strong>required</strong></mat-error>}
+            </mat-form-field>
+        </mat-grid-tile>
+        <mat-grid-tile>
+            <mat-form-field>
+                <mat-label>Status</mat-label>
+                <mat-select formControlName="user_status">
+                  <mat-option value="A">Active</mat-option>
+                  <mat-option value="I">Inactive</mat-option>
+                  <mat-option value="T">Terminated</mat-option>
+                </mat-select>
+              </mat-form-field>
+        </mat-grid-tile>
+        <mat-grid-tile>
+            <mat-form-field>
+                <mat-label>Department</mat-label>
+                <input matInput type="text" maxlength="255" formControlName="department"/>
+            </mat-form-field>
+        </mat-grid-tile>
+    </mat-grid-list>
+
+    <button mat-raised-button type="submit" class="submit-button" [disabled]="form.invalid">Submit</button>
+</form>
