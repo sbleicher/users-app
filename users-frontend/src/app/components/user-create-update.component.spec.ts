@@ -94,7 +94,7 @@ describe('UserCreateUpdateComponent - Create', () => {
         // Detect changes to update the view
         fixture.detectChanges();
 
-        const req = httpTestingController.expectOne(`http://localhost:8080/api/users`);
+        const req = httpTestingController.expectOne(`http://localhost:8080/api/v1/users`);
         expect(req.request.method).toBe('POST');
         req.flush(testUsers[0]);
 
@@ -143,9 +143,9 @@ describe('UserCreateUpdateComponent - Edit', () => {
   it('should fetch user data when in edit mode and populate inputs', async () => {
     fixture.detectChanges();
 
-    const req = httpTestingController.expectOne('http://localhost:8080/api/users/1');
+    const req = httpTestingController.expectOne('http://localhost:8080/api/v1/users/1');
     expect(req.request.method).toBe('GET'); 
-    req.flush(testUsers[0]); 
+    req.flush({data: testUsers[0]}); 
 
     expect(component.user).toEqual(testUsers[0]);
     fixture.detectChanges();

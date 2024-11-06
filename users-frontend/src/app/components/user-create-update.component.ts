@@ -10,6 +10,7 @@ import { UserService } from '../services/user.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import { NgIf, NgClass  } from '@angular/common';
+import { throwError } from 'rxjs';
 
 @Component({
     standalone: true,
@@ -22,6 +23,7 @@ export class UserCreateUpdateComponent {
 
     user_id : number | undefined;
     user: User | undefined;
+    usernameError: string | undefined;
     mode: string = "create";
 
     constructor(private formBuilder: FormBuilder, private userService: UserService, private router: Router, private route: ActivatedRoute) {
@@ -53,12 +55,16 @@ export class UserCreateUpdateComponent {
 
     getUser(user_id: number) {
         this.userService.getUser(user_id).subscribe({
-            next: (data: any) => {
-                this.user = data;
-                this.updateFormWithUser(data);
+            next: (req: any) => {
+                if(!req.data){
+                    throwError(() => new Error('User data is invalid'));
+                }
+
+                this.user = req.data;
+                this.updateFormWithUser(req.data);
             },
             error: (error: any) => {
-                console.error('Error creating user', error);
+                console.error('Error getting user', error);
                 this.router.navigate(['/']);
             }
         });
@@ -77,18 +83,34 @@ export class UserCreateUpdateComponent {
 
     onSubmit(){
         if (this.form.valid) {
+            this.usernameError = undefined;
             const newUser: User = this.form.value;
-            this.userService.createUser(newUser).subscribe({
-                next: (data: any) => {
-                    console.error('Data', data);
-                    this.router.navigate(['/']);
-                    this.form.reset();
-                },
-                error: (error: any) => {
-                    console.error('Error creating user', error);
-                    this.router.navigate(['/']);
-                }
-            });
+            if (this.mode == "create"){
+                this.userService.createUser(newUser).subscribe({
+                    next: () => {
+                        this.router.navigate(['/']);
+                        this.form.reset();
+                    },
+                    error: (res: any) => {
+                        if (res?.error?.message === "User already exists") {
+                            this.usernameError = newUser.user_name
+                        }
+                    }
+                });
+            } else {
+                newUser.user_id = Number(this.user_id);
+                this.userService.updateUser(newUser).subscribe({
+                    next: () => {
+                        this.router.navigate(['/']);
+                        this.form.reset();
+                    },
+                    error: (res: any) => {
+                        if (res?.error?.message === "User already exists") {
+                            this.usernameError = newUser.user_name
+                        }
+                    }
+                });
+            }
         }
     }
 }

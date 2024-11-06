@@ -1,0 +1,39 @@
+# Docker Compose file Reference (https://docs.docker.com/compose/compose-file/)
+
+services:
+
+  go_app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL: postgres://postgres:password@database:5432/users?sslmode=disable
+    ports:
+      - "8080:8080" 
+      # - "2345:2345" # Debug Port
+    restart: unless-stopped 
+    networks:  
+      - backend
+    depends_on:
+      database:
+        condition: service_healthy
+  
+  database:
+    image: postgres:16-alpine
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=users
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 5s
+      timeout: 1s
+      retries: 5
+
+networks:
+  backend: 
+    driver: bridge

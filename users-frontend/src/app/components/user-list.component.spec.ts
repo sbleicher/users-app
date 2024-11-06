@@ -7,6 +7,7 @@ import { By } from '@angular/platform-browser';
 import { DebugElement, NO_ERRORS_SCHEMA } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
+import { httpTestWrap } from '../helpers/tests';
 
 const HEADER_ROW = 1
 const testUsers = [
@@ -19,16 +20,24 @@ describe('UserListComponent', () => {
   let fixture: ComponentFixture<UserListComponent>;
   let userService: jasmine.SpyObj<UserService>;
   let routerSpy: jasmine.SpyObj<Router>;
+  let mockWindow = { location: { location: {reload: () => {}} } };
 
   beforeEach(async () => {
     const userServiceMock = jasmine.createSpyObj('UserService', ['getUsers', 'deleteUser']);
     routerSpy = jasmine.createSpyObj('Router', ['navigate']);
-    
+    const locationMock: Partial<Location> = {
+      reload: jasmine.createSpy('reload')  // Create a spy for reload
+    };
+
+    // Replace window.location with the mock
+    // spyOnProperty(window, 'location').and.returnValue(locationMock as Location);
+
     await TestBed.configureTestingModule({
       imports: [UserListComponent, MatButtonModule],
       providers: [
         { provide: UserService, useValue: userServiceMock },
-        { provide: Router, useValue: routerSpy }
+        { provide: Router, useValue: routerSpy },
+        // { provide: 'Window', useValue: mockWindow }
       ],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
@@ -37,8 +46,8 @@ describe('UserListComponent', () => {
     component = fixture.componentInstance;
     userService = TestBed.inject(UserService) as jasmine.SpyObj<UserService>;
 
-    userService.getUsers.and.returnValue(of(testUsers));
-    userService.deleteUser.and.returnValue(of());
+    userService.getUsers.and.returnValue(of(httpTestWrap(testUsers)));
+    userService.deleteUser.and.returnValue(of(httpTestWrap(undefined)));
     
     fixture.detectChanges();
   });
@@ -68,6 +77,8 @@ describe('UserListComponent', () => {
   });
 
   it('should call the delete api endpoint and refresh page', () => {
+    component.reloadPage = function() { };
+
     const buttons = fixture.debugElement.queryAll(By.css('button'));
     buttons[2].triggerEventHandler('click', null);
 

@@ -21,11 +21,11 @@ export class UserListComponent implements OnInit {
 
   ngOnInit() {
     this.userService.getUsers().subscribe({
-      next: (data: any) => {
-          this.users = data
+      next: (req: any) => {
+        this.users = req.data ? req.data : []
       },
       error: (error: any) => {
-          console.error('Error getting users', error);
+        console.error('Error getting users', error);
       }
     });
   }
@@ -40,19 +40,22 @@ export class UserListComponent implements OnInit {
 
   deleteUser(user_id: number) {
     this.userService.deleteUser(user_id).subscribe({
-      next: (data: any) => {
-          console.error('Data', data);
-          this.router.navigate(['/']);
+      next: () => {
+        this.reloadPage();
       },
       error: (error: any) => {
-          console.error('Error creating user', error);
-          this.router.navigate(['/']);
+        console.error('Error deleting user', error);
+        window.location.reload();
       }
     });
   }
 
   statusToString(user_status: UserStatus): string {
     return userStatusToString(user_status);
+  }
+
+  reloadPage() {
+    window.location.reload();
   }
 }
 

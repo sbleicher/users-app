@@ -8,35 +8,43 @@ const testUsers = [
   {user_id: 2, user_name: "janedoe", first_name: "Jane", last_name: "Doe", email:"janedoe@gmail.com", user_status: UserStatus.Inactive, department:"IT"}
 ]
 
+export type Response = {
+    code:    number,
+		message: string,
+		details?: string,
+		data?: User | User[] | number,
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
   private apiUrl = 'http://localhost:8080';
+  private usersUrl = `${this.apiUrl}/api/v1/users`;
 
   constructor(private http: HttpClient) { }
 
-  getUser(user_id: number): Observable<User> {
+  getUser(user_id: number): Observable<Response> {
     // return of(testUsers[0]);
     
-    return this.http.get<User>(`${this.apiUrl}/api/users/${user_id}`);
+    return this.http.get<Response>(`${this.usersUrl}/${user_id}`);
   }
 
-  getUsers(): Observable<User[]> {
+  getUsers(): Observable<Response> {
     // return of(testUsers);
     
-    return this.http.get<User[]>(`${this.apiUrl}/api/users`);
+    return this.http.get<Response>(this.usersUrl);
   }
 
-  createUser(user: User): Observable<User> {
-    return this.http.post<User>(`${this.apiUrl}/api/users`, user);
+  createUser(user: User): Observable<Response> {
+    return this.http.post<Response>(this.usersUrl, user);
   }
 
-  deleteUser(user_id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/api/users/${user_id}`);
+  deleteUser(user_id: number): Observable<Response> {
+    return this.http.delete<Response>(`${this.usersUrl}/${user_id}`);
   }
 
-  updateUser(user: User): Observable<User> {
-    return this.http.put<User>(`${this.apiUrl}/api/users/${user.user_id}`, user);
+  updateUser(user: User): Observable<Response> {
+    return this.http.put<Response>(this.usersUrl, user);
   }
 }

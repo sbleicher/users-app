@@ -4,6 +4,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { UserService } from './user.service';
 import { UserStatus } from '../user';
 import { firstValueFrom } from 'rxjs';
+import { httpTestWrap } from '../helpers/tests';
 
 const testUsers = [
     {user_id: 1, user_name: "johndoe", first_name: "John", last_name: "Doe", email:"johndoe@gmail.com", user_status: UserStatus.Active, department:"IT"},
@@ -32,12 +33,12 @@ describe('UserService', () => {
     const users$ = service.getUsers();
     const usersPromise = firstValueFrom(users$);
 
-    const req = httpTestingController.expectOne(`${host}/api/users`);
+    const req = httpTestingController.expectOne(`${host}/api/v1/users`);
     expect(req.request.method).toBe('GET');
     
-    req.flush(testUsers);
+    req.flush(httpTestWrap(testUsers));
 
-    expect(await usersPromise).toEqual(testUsers);
+    expect((await usersPromise).data).toEqual(testUsers);
 
     httpTestingController.verify();
   });
@@ -46,12 +47,12 @@ describe('UserService', () => {
     const users$ = service.getUser(1);
     const usersPromise = firstValueFrom(users$);
 
-    const req = httpTestingController.expectOne(`${host}/api/users/1`);
+    const req = httpTestingController.expectOne(`${host}/api/v1/users/1`);
     expect(req.request.method).toBe('GET');
     
-    req.flush(testUsers[0]);
+    req.flush(httpTestWrap(testUsers[0]));
 
-    expect(await usersPromise).toEqual(testUsers[0]);
+    expect((await usersPromise).data).toEqual(testUsers[0]);
 
     httpTestingController.verify();
   });
@@ -60,13 +61,13 @@ describe('UserService', () => {
     const users$ = service.createUser(testUsers[0]);
     const usersPromise = firstValueFrom(users$);
 
-    const req = httpTestingController.expectOne(`${host}/api/users`);
+    const req = httpTestingController.expectOne(`${host}/api/v1/users`);
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toBe(testUsers[0])
     
-    req.flush(testUsers[0]);
+    req.flush(httpTestWrap(testUsers[0]));
 
-    expect(await usersPromise).toEqual(testUsers[0]);
+    expect((await usersPromise).data).toEqual(testUsers[0]);
 
     httpTestingController.verify();
   });
@@ -75,13 +76,13 @@ describe('UserService', () => {
     const users$ = service.updateUser(testUsers[0]);
     const usersPromise = firstValueFrom(users$);
 
-    const req = httpTestingController.expectOne(`${host}/api/users/1`);
+    const req = httpTestingController.expectOne(`${host}/api/v1/users`);
     expect(req.request.method).toBe('PUT');
     expect(req.request.body).toBe(testUsers[0])
     
-    req.flush(testUsers[0]);
+    req.flush(httpTestWrap(testUsers[0]));
 
-    expect(await usersPromise).toEqual(testUsers[0]);
+    expect((await usersPromise).data).toBe(testUsers[0]);
 
     httpTestingController.verify();
   });
@@ -90,35 +91,13 @@ describe('UserService', () => {
     const users$ = service.deleteUser(testUsers[0].user_id);
     const usersPromise = firstValueFrom(users$);
 
-    const req = httpTestingController.expectOne(`${host}/api/users/${testUsers[0].user_id}`);
+    const req = httpTestingController.expectOne(`${host}/api/v1/users/${testUsers[0].user_id}`);
     expect(req.request.method).toBe('DELETE');
     
-    req.flush(testUsers[0]);
+    req.flush(httpTestWrap(testUsers[0]));
 
     await usersPromise;
 
     httpTestingController.verify();
   });
-
-//   it('should handle a 404 error from the API', () => {
-//     const errorMessage = 'Not Found';
-
-//     // Call the service method that makes the HTTP request
-//     service.getUsers().subscribe(
-//       () => fail('should have failed with 404 error'),
-//       (error) => {
-//         expect(error.status).toBe(404);
-//         expect(error.error).toBe(errorMessage);
-//       }
-//     );
-
-//     // Expect that an HTTP GET request was made to '/api/users'
-//     const req = httpTestingController.expectOne('/api/users');
-    
-//     // Respond with a 404 error
-//     req.flush(errorMessage, { status: 404, statusText: 'Not Found' });
-
-//     // Verify no other requests are pending
-//     httpTestingController.verify();
-//   });
 });

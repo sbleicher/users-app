@@ -1,27 +1,41 @@
 package main
 
 import (
-	"github.com/labstack/echo/v4"
-	// "github.com/labstack/echo/v4/middleware"
+	"context"
 	"net/http"
+	"os"
+	"os/signal"
+	"time"
+	"users-backend/controller"
+	"users-backend/handler"
+	"users-backend/repo/postgres"
+
+	"github.com/labstack/echo/v4"
 )
 
 func main() {
-	// Echo instance
+	repo, cleanup := postgres.NewPostgresRepo()
+	defer cleanup()
+
+	c := controller.NewUserController(repo)
+
 	e := echo.New()
+	handler.InitRouter(e, c)
 
-	// Middleware
-	// e.Use(middleware.Logger())
-	// e.Use(middleware.Recover())
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
+	defer stop()
 
-	// Routes
-	e.GET("/", hello)
+	go func() {
+		if err := e.Start(":8080"); err != nil && err != http.ErrServerClosed {
+			e.Logger.Fatal("shutting down the server")
+		}
+	}()
 
-	// Start server
-	e.Logger.Fatal(e.Start(":1323"))
-}
+	<-ctx.Done()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
-// Handler
-func hello(c echo.Context) error {
-	return c.String(http.StatusOK, "Hello, World!")
+	if err := e.Shutdown(ctx); err != nil {
+		e.Logger.Fatal(err)
+	}
 }

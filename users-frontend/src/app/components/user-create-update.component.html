@@ -64,4 +64,7 @@
     </mat-grid-list>
 
     <button mat-raised-button type="submit" class="submit-button" [disabled]="form.invalid">Submit</button>
+    @if (usernameError !== undefined) {
+        <mat-error>Submitted username "{{usernameError}}" already exists</mat-error>
+    }
 </form>
