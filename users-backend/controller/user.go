@@ -64,7 +64,7 @@ func (c *UserControllerImpl) CreateUser(userName, firstName, lastName, email, us
 		UserStatus: us,
 		Department: sql.NullString{
 			String: department,
-			Valid:  true,
+			Valid:  department != "",
 		},
 	}
 
@@ -99,7 +99,7 @@ func (c *UserControllerImpl) UpdateUser(user_id int, userName, firstName, lastNa
 		UserStatus: us,
 		Department: sql.NullString{
 			String: department,
-			Valid:  true,
+			Valid:  department != "",
 		},
 	}
 
