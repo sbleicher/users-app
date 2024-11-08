@@ -21,6 +21,18 @@ docker compose up -d
 go test -v ./...
 ```
 
+To run without docker (Not tested):
+```shell
+cd users-backend
+go mod download && go mod verify
+go clean -cache && go build -o main .
+
+chmod +x main
+
+# This will require you have a postgres database setup locally
+DATABASE_URL=postgres://<username>:<password>@localhost:5432/users?sslmode=disable ./main
+```
+
 ## Swagger
 Hosted at: http://localhost:8080/swagger/index.html
 
