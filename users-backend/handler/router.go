@@ -7,11 +7,19 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	echoSwagger "github.com/swaggo/echo-swagger"
 )
 
+// Swagger spec:
+//
+//	@title			User Service
+//	@version		1.0
+//	@description	User Management Service
+//	@host			localhost:8080
+//	@BasePath		/api/v1
 func InitRouter(e *echo.Echo, userController *controller.UserControllerImpl) {
-	// e.Use(middleware.Logger())
-	// e.Use(middleware.Recover())
+	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
 
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{"http://localhost:4200"},
@@ -22,8 +30,7 @@ func InitRouter(e *echo.Echo, userController *controller.UserControllerImpl) {
 		return respError(c, http.StatusNotFound, "Invalid endpoint", fmt.Sprintf("Endpoint %s does not exist", c.Request().URL.Path))
 	}
 
-	// e.GET("/swagger/*", echoSwagger.WrapHandler)
-	// e.GET("/metrics", echo.WrapHandler(promhttp.Handler()))
+	e.GET("/swagger/*", echoSwagger.WrapHandler)
 
 	api := e.Group("/api/v1")
 	user := api.Group("/users")

@@ -1,0 +1,241 @@
+definitions:
+  handler.HttpError:
+    properties:
+      code:
+        type: integer
+      details:
+        type: string
+      message:
+        type: string
+    type: object
+  handler.HttpSuccess:
+    properties:
+      code:
+        type: integer
+      data: {}
+      message:
+        type: string
+    type: object
+  handler.HttpUserPost:
+    properties:
+      department:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+      user_name:
+        type: string
+      user_status:
+        type: string
+    required:
+    - email
+    - first_name
+    - last_name
+    - user_name
+    - user_status
+    type: object
+  handler.HttpUserPostResponse:
+    properties:
+      user_id:
+        type: integer
+    type: object
+  handler.HttpUserPut:
+    properties:
+      department:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+      user_id:
+        type: integer
+      user_name:
+        type: string
+      user_status:
+        type: string
+    required:
+    - email
+    - first_name
+    - last_name
+    - user_id
+    - user_name
+    - user_status
+    type: object
+info:
+  contact: {}
+paths:
+  /users:
+    get:
+      description: Gets all the users
+      operationId: GetAllUsers
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.HttpSuccess'
+            - properties:
+                code:
+                  type: integer
+                data:
+                  $ref: '#/definitions/handler.HttpUserPostResponse'
+                message:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.HttpError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.HttpError'
+      summary: Gets all the users
+      tags:
+      - users
+    post:
+      description: Create a new user
+      operationId: CreateUser
+      parameters:
+      - description: User Informations
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/handler.HttpUserPost'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.HttpSuccess'
+            - properties:
+                code:
+                  type: integer
+                data:
+                  $ref: '#/definitions/handler.HttpUserPostResponse'
+                message:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.HttpError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.HttpError'
+      summary: Create a new user
+      tags:
+      - users
+    put:
+      description: Updates a user
+      operationId: UpdateUser
+      parameters:
+      - description: User Informations
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/handler.HttpUserPut'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.HttpSuccess'
+            - properties:
+                code:
+                  type: integer
+                data:
+                  $ref: '#/definitions/handler.HttpUserPostResponse'
+                message:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.HttpError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.HttpError'
+      summary: Updates a user
+      tags:
+      - users
+  /users/{user_id}:
+    delete:
+      description: Deletes a user
+      operationId: DeleteUser
+      parameters:
+      - description: User ID
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.HttpSuccess'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.HttpError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.HttpError'
+      summary: Deletes a user
+      tags:
+      - users
+    get:
+      description: Gets a user
+      operationId: GetUser
+      parameters:
+      - description: User ID
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.HttpSuccess'
+            - properties:
+                code:
+                  type: integer
+                data:
+                  $ref: '#/definitions/handler.HttpUserPostResponse'
+                message:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.HttpError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.HttpError'
+      summary: Gets a user
+      tags:
+      - users
+swagger: "2.0"

@@ -10,6 +10,8 @@ import (
 	"users-backend/handler"
 	"users-backend/repo/postgres"
 
+	_ "users-backend/docs"
+
 	"github.com/labstack/echo/v4"
 )
 

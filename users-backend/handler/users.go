@@ -77,6 +77,16 @@ func (h *UserHttpHandler) RegisterRoutes() {
 	h.group.DELETE("/:user_id", h.DeleteUser)
 }
 
+// @Summary		Create a new user
+// @Description	Create a new user
+// @ID				CreateUser
+// @Tags			users
+// @Produce		json
+// @Param			user	body		HttpUserPost	true	"User Informations"
+// @Success		200		{object}	HttpSuccess{data=handler.HttpUserPostResponse,code=int,message=string}
+// @Failure		400		{object}	HttpError
+// @Failure		500		{object}	HttpError
+// @Router			/users [POST]
 func (h *UserHttpHandler) CreateUser(c echo.Context) error {
 	body := HttpUserPost{}
 	validate := validator.New()
@@ -102,6 +112,15 @@ func (h *UserHttpHandler) CreateUser(c echo.Context) error {
 	return respSuccess(c, http.StatusCreated, success, HttpUserPostResponse{UserID: newUserID})
 }
 
+// @Summary		Gets all the users
+// @Description	Gets all the users
+// @ID				GetAllUsers
+// @Tags			users
+// @Produce		json
+// @Success		200		{object}	HttpSuccess{data=handler.HttpUserPostResponse[],code=int,message=string}
+// @Failure		400		{object}	HttpError
+// @Failure		500		{object}	HttpError
+// @Router			/users [GET]
 func (h *UserHttpHandler) GetAllUsers(c echo.Context) error {
 	users, err := h.controller.GetAllUsers()
 	if err != nil {
@@ -116,6 +135,16 @@ func (h *UserHttpHandler) GetAllUsers(c echo.Context) error {
 	return respSuccess(c, http.StatusOK, success, response)
 }
 
+// @Summary		Gets a user
+// @Description	Gets a user
+// @ID				GetUser
+// @Tags			users
+// @Produce		json
+// @Param			user_id	path		int	true	"User ID"
+// @Success		200		{object}	HttpSuccess{data=handler.HttpUserPostResponse[],code=int,message=string}
+// @Failure		400		{object}	HttpError
+// @Failure		500		{object}	HttpError
+// @Router			/users/{user_id} [GET]
 func (h *UserHttpHandler) GetUser(c echo.Context) error {
 	userIdParam := c.Param("user_id")
 	user_id, err := strconv.Atoi(userIdParam)
@@ -131,6 +160,16 @@ func (h *UserHttpHandler) GetUser(c echo.Context) error {
 	return respSuccess(c, http.StatusOK, success, NewHttpUserResponse(*user))
 }
 
+// @Summary		Updates a user
+// @Description	Updates a user
+// @ID				UpdateUser
+// @Tags			users
+// @Produce		json
+// @Param			user	body		HttpUserPut	true	"User Informations"
+// @Success		200		{object}	HttpSuccess{data=handler.HttpUserPostResponse,code=int,message=string}
+// @Failure		400		{object}	HttpError
+// @Failure		500		{object}	HttpError
+// @Router			/users [PUT]
 func (h *UserHttpHandler) UpdateUser(c echo.Context) error {
 	body := HttpUserPut{}
 	validate := validator.New()
@@ -157,6 +196,16 @@ func (h *UserHttpHandler) UpdateUser(c echo.Context) error {
 
 }
 
+// @Summary		Deletes a user
+// @Description	Deletes a user
+// @ID				DeleteUser
+// @Tags			users
+// @Produce		json
+// @Param			user_id	path		int	true	"User ID"
+// @Success		200		{object}	HttpSuccess
+// @Failure		400		{object}	HttpError
+// @Failure		500		{object}	HttpError
+// @Router			/users/{user_id} [DELETE]
 func (h *UserHttpHandler) DeleteUser(c echo.Context) error {
 	userIdParam := c.Param("user_id")
 	user_id, err := strconv.Atoi(userIdParam)
