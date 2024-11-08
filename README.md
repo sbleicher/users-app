@@ -7,8 +7,10 @@ Small angular and go application for doing CRUD operations on users
 cd users-frontend
 npm install
 npm start
-
-# For Tests
+```
+Testing the frontend:
+```shell
+cd users-frontend
 npm test
 ```
 
@@ -16,8 +18,10 @@ npm test
 ```shell
 docker compose build --no-cache
 docker compose up -d
-
-#For Tests
+```
+Testing the backend:
+```shell
+cd users-backend
 go test -v ./...
 ```
 
